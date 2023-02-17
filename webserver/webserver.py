@@ -1,14 +1,10 @@
 import cgi
-import os
 import json
 import traceback
-import functools
 
 from enum import Enum
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
-from webserver import endpoints
-from functools import wraps
 
 WEB_CONFIG = {
     "web_debug": False,

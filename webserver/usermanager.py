@@ -1,6 +1,5 @@
 USER_FILE = "users.meta"
 
-import json
 import secrets
 import os
 import string
