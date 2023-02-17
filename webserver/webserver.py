@@ -201,6 +201,16 @@ class web_server(BaseHTTPRequestHandler):
     def generic_malformed_request(self):
         self.send_web_response(webstatus.SERV_FAILURE, "Bad Request.")
 
+    #
+    # Handle a OPTIONS request
+    #
+    def do_OPTIONS(self):
+        WEB_CONFIG["logger_function_info"]("Handling API-options request from {}..".format(self.client_address))
+
+        self.send_web_response(webstatus.SUCCESS, "OK")
+
+        return
+
     # 
     # handle the get request
     #
