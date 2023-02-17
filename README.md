@@ -8,4 +8,4 @@ python3 ./main.py
 ```
 
 # Documentation
-To find the API documentation, open the `APIDOC.md` file.
+To find the API documentation, open the [APIDOC.md](APIDOC.md) file.
