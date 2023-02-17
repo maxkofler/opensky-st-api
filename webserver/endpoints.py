@@ -90,34 +90,30 @@ class branch_web_providers():
     # ENDPOINT /createuser (POST)
     @staticmethod
     def create_user_endpoint(httphandler, form_data, post_data):
-        if("authkey" not in post_data):
-            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for authentication.")
+
+        if("user" not in post_data):
+            blog.debug("Missing request data for user creation: Username (user)")
+            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for user creation: User (user)")
             return
 
-        # check if logged in
-        if(not webauth.web_auth().validate_key(post_data["authkey"])):
-            httphandler.send_web_response(webserver.webstatus.AUTH_FAILURE, "Invalid authentication key.")
+        if("pass" not in post_data):
+            blog.debug("Missing request data for user creation: Password (pass)")
+            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for user creation: Password (pass)")
             return
 
-
-        if("cuser" not in post_data or "cpass" not in post_data):
-            blog.debug("Missing request data for user creation")
-            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for user creation.")
-            return
+        nuser = post_data["user"]
+        npass = post_data["pass"]
         
-        cuser = post_data["cuser"]
-        cpass = post_data["cpass"]
-        
-        if(bool(re.match('^[a-zA-Z0-9]*$', cuser)) == False):
+        if(bool(re.match('^[a-zA-Z0-9]*$', nuser)) == False):
             blog.debug("Invalid username for account creation")
-            httphandler.send_web_response(webserver.webstatus.SERV_FAILURE, "Invalid username for account creation..")
+            httphandler.send_web_response(webserver.webstatus.SERV_FAILURE, "Invalid username for account creation")
             return
         
-        if(not usermanager.usermanager().add_user(cuser, cpass)):
+        if(not usermanager.usermanager().add_user(nuser, npass)):
             httphandler.send_web_response(webserver.webstatus.SERV_FAILURE, "User already exists.")
             return
 
-        httphandler.send_web_response(webserver.webstatus.SUCCESS, "User created.")
+        httphandler.send_web_response(webserver.webstatus.SUCCESS, "User created")
 
     #
     # / endpoint, returns html page
