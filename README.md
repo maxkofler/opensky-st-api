@@ -1,20 +1,21 @@
 # opensky-st-api
 The API part of the OpenSky SouthTyrol project based on the [branch](https://github.com/AcaciaLinux/branch) webserver
 
-# Usage
-There is one dependency for the usermanager: `bcrypt`, you can install it using `pip3`:
+# Installation
+To install this api on your system, run the following command as root:
 ```bash
-pip3 install bcrypt
+make install
 ```
 
-To use this API, you only need the `python3` interpreter. To just get started, use the following command:
+# Usage
+Straightforward:
 ```bash
-python3 ./main.py
+opensky-st-api
 ```
 
 If you need to send wildcard CORS headers for testing purposes, you can use the following command:
 ```bash
-python3 ./main.py --wildcard-cors
+opensky-st-api --wildcard-cors
 ```
 
 # Documentation
