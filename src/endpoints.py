@@ -1,9 +1,9 @@
 import re
 import blog
 
-from webserver import webauth
-from webserver import webserver
-from webserver import usermanager
+from branchweb import webauth
+from branchweb import webserver
+from branchweb import usermanager
 
 class branch_web_providers():
     

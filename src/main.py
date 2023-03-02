@@ -1,7 +1,7 @@
 
-from webserver import webserver
-from webserver import endpoints
-from webserver import usermanager
+from branchweb import webserver
+import endpoints
+from branchweb import usermanager
 import blog
 import argparse
 
