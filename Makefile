@@ -1,6 +1,6 @@
 install:
-	@echo "Installing pip package bcrypt..."
-	pip3 install bcrypt
+	@echo "Installing pip packages..."
+	pip3 install bcrypt websockets
 	@echo "Installing branchlog..."
 	cd branchlog && python3 setup.py bdist_wheel && python3 -m pip install dist/branchlog-1.0-py3-none-any.whl --force-reinstall
 	@echo "Installing branchweb..."
