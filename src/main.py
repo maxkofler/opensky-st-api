@@ -10,6 +10,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--wildcard-cors", help="Lets the webserver send wildcard CORS headers for testing purposes", action="store_true")
     args = parser.parse_args()
+    blog.enable_debug_level()
 
     # Setup the configuration and logger
     blog.info("Setting up webserver configuration..")
