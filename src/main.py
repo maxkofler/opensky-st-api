@@ -1,7 +1,7 @@
 
 from branchweb import webserver
 import endpoints
-from branchweb import usermanager
+from branchweb import webauth
 import blog
 import argparse
 
@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     # Load the user file for the first time
     blog.info("Loading user file..")
-    userm = usermanager.usermanager()
+    webauth.web_auth.setup_user_manager()
 
     # Set up the endpoints
     webserver.web_server.register_get_endpoints(
