@@ -1,6 +1,12 @@
 # opensky-st-api
 The API part of the OpenSky SouthTyrol project based on the [branch](https://github.com/AcaciaLinux/branch) webserver
 
+# Obtaining the source code
+To fetch the source code, you can use the following command:
+```bash
+git clone --recursive https://github.com/maxkofler/opensky-st-api
+```
+
 # Installation
 To install this api on your system, run the following command as root:
 ```bash
