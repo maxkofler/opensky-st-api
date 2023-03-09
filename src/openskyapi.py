@@ -51,4 +51,4 @@ class OpenSKYAPI:
         self.flightData.start()
 
         # Start the webserver
-        webserver.start_web_server("localhost", 8080)
+        webserver.start_web_server("0.0.0.0", 8080)
