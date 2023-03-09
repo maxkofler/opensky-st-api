@@ -8,7 +8,7 @@ class Plane:
         self.addr = addr
         self.tail = tail
         self.entries = []
-        blog.info("New plane: addr: {}, tail: {}".format(self.addr, self.tail))
+        blog.debug("New plane: addr: {}, tail: {}".format(self.addr, self.tail))
 
     def add_entry(self, entry: Entry):
         self.entries.append(entry)
