@@ -7,21 +7,16 @@ To fetch the source code, you can use the following command:
 git clone --recursive https://github.com/maxkofler/opensky-st-api
 ```
 
-# Installation
-To install this api on your system, run the following command as root:
+# Building
+It is recommended to build the docker container using the following command:
 ```bash
-make install
+docker build . -t opensky-st-api
 ```
 
 # Usage
-Straightforward:
+After building the container image, it can be used for testing purposes with docker run:
 ```bash
-opensky-st-api
-```
-
-If you need to send wildcard CORS headers for testing purposes, you can use the following command:
-```bash
-opensky-st-api --wildcard-cors
+docker run -it -p "8080:8080" opensky-st-api
 ```
 
 # Documentation
