@@ -27,7 +27,7 @@ class OpenSKYAPI:
         # Setup the configuration and logger
         blog.info("Setting up webserver configuration..")
         webserver.WEB_CONFIG["logger_function_debug"] = blog.debug
-        webserver.WEB_CONFIG["logger_function_info"] = blog.web_log
+        webserver.WEB_CONFIG["logger_function_info"] = blog.info
         webserver.WEB_CONFIG["web_debug"] = True
         webserver.WEB_CONFIG["send_cors_headers"] = args.wildcard_cors
 
