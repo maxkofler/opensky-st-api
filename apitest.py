@@ -6,6 +6,7 @@ import random, string
 letters = string.ascii_letters
 username = "".join(random.choice(letters) for i in range(15))
 password = "".join(random.choice(letters) for i in range(15))
+otherpass = "".join(random.choice(letters) for i in range(15))
 
 if (len(sys.argv) != 2):
     print("Need the URL for the API!")
@@ -64,6 +65,12 @@ if (req("checkauth", { "authkey": authkey})["response_code"] == 200):
 else:
     pn("FAIL")
 
+p("Changing password...")
+if (req("changepass", { "authkey": authkey, "pass": otherpass })["response_code"] == 200):
+    pn("OK")
+else:
+    pn("FAIL")
+
 p("Logoff...")
 if (req("logoff", { "authkey": authkey})["response_code"] == 200):
     pn("OK")
@@ -75,3 +82,28 @@ if (req("checkauth", { "authkey": authkey})["response_code"] == 200):
     pn("FAIL")
 else:
     pn("OK")
+
+p("Logging in with old password...")
+if (req("auth", { "user": username, "pass": password })["response_code"] == 200):
+    pn("FAIL")
+else:
+    pn("OK")
+
+p("Logging in with new password...")
+if (req("auth", { "user": username, "pass": otherpass })["response_code"] == 200):
+    pn("OK")
+    authkey = last_resp["payload"]
+else:
+    pn("FAIL")
+
+p("Changing password back...")
+if (req("changepass", { "authkey": authkey, "pass": otherpass })["response_code"] == 200):
+    pn("OK")
+else:
+    pn("FAIL")
+
+p("Logoff...")
+if (req("logoff", { "authkey": authkey})["response_code"] == 200):
+    pn("OK")
+else:
+    pn("FAIL")
