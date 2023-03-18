@@ -1,12 +1,13 @@
 import re
 import blog
 
-from branchweb import webauth
 from branchweb import webserver
 from branchweb import usermanager
 
 class branch_web_providers():
-    
+
+    usermgr = usermanager.usermanager()
+
     @staticmethod
     def get_post_providers():
         post_providers = {
@@ -14,6 +15,7 @@ class branch_web_providers():
             "checkauth": branch_web_providers.check_auth_endpoint,
             "logoff": branch_web_providers.logoff_endpoint,
             "createuser": branch_web_providers.create_user_endpoint,
+            "changepass": branch_web_providers.change_pass_endpoint,
         }
         return post_providers
     
@@ -35,16 +37,22 @@ class branch_web_providers():
             blog.debug("Missing request data for authentication")
             httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for authentication")
             return
-        
-        if(webauth.web_auth().validate_pw(post_data["user"], post_data["pass"])):
-            blog.debug("Authentication succeeded.")
-            key = webauth.web_auth().new_authorized_key()
-            
-            httphandler.send_web_response(webserver.webstatus.SUCCESS, "{}".format(key.key_id))
-        
-        else:
+
+        user = branch_web_providers.usermgr.get_user(post_data["user"])
+
+        if (user is None):
+            blog.debug("Failed to authenticate user '{}': Not registered".format(post_data["user"]))
+            httphandler.send_web_response(webserver.webstatus.AUTH_FAILURE, "Authentication failed: user {} is not registered.".format(post_data["user"]))
+            return
+
+        authkey = user.authenticate(post_data["pass"])
+
+        if (authkey is None):
             blog.debug("Authentication failure")
             httphandler.send_web_response(webserver.webstatus.AUTH_FAILURE, "Authentication failed.")
+        else:
+            blog.debug("Authentication succeeded for user {} with new autkey {}".format(user.name, authkey.key_id))
+            httphandler.send_web_response(webserver.webstatus.SUCCESS, "{}".format(authkey.key_id))
 
     #
     # checks if the user is logged in or not
@@ -55,13 +63,19 @@ class branch_web_providers():
         if("authkey" not in post_data):
             httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for authentication.")    
             return
-        
-        if(webauth.web_auth().validate_key(post_data["authkey"])):
-            httphandler.send_web_response(webserver.webstatus.SUCCESS, "Authentication succeeded.")
-            
+
+        authkey = post_data["authkey"]
+
+        user = branch_web_providers.usermgr.get_key_owner(authkey)
+
+        if (user is None):
+            blog.debug("Authkey {} was tested for validity: FALSE".format(authkey))
+            httphandler.send_web_response(webserver.webstatus.AUTH_FAILURE, "Authkey {} is invalid.".format(authkey))
         else:
-            httphandler.send_web_response(webserver.webstatus.AUTH_FAILURE, "Authentication failed.")
-            
+            branch_web_providers.usermgr.update_user(user)
+            blog.debug("Authkey {} was tested for validity: TRUE".format(authkey))
+            httphandler.send_web_response(webserver.webstatus.SUCCESS, "Authkey {} is valid.".format(authkey))
+
     #
     # destroys the specified session and logs the user off
     #
@@ -72,14 +86,16 @@ class branch_web_providers():
             httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for authentication.")
             return
 
-        # check if logged in       
-        if(webauth.web_auth().validate_key(post_data["authkey"])):
-            webauth.web_auth().invalidate_key(post_data["authkey"])
-            httphandler.send_web_response(webserver.webstatus.SUCCESS, "Logoff acknowledged.")
-            
-        else:
+        authkey = post_data["authkey"]
+
+        user = branch_web_providers.usermgr.revoke_authkey(authkey)
+
+        if (user is None):
+            blog.debug("Tried to revoke invalid authkey {}".format(authkey))
             httphandler.send_web_response(webserver.webstatus.AUTH_FAILURE, "Invalid authentication key.")
-            
+        else:
+            blog.debug("Authkey {} owned by {} was revoked".format(authkey, user.name))
+            httphandler.send_web_response(webserver.webstatus.SUCCESS, "Logoff acknowledged.")
  
     #
     # creates a webuser
@@ -100,17 +116,48 @@ class branch_web_providers():
 
         nuser = post_data["user"]
         npass = post_data["pass"]
-        
+
         if(bool(re.match('^[a-zA-Z0-9]*$', nuser)) == False):
             blog.debug("Invalid username for account creation")
             httphandler.send_web_response(webserver.webstatus.SERV_FAILURE, "Invalid username for account creation")
             return
-        
-        if(not usermanager.usermanager().add_user(nuser, npass)):
+
+        if(not branch_web_providers.usermgr.add_user(nuser, npass)):
             httphandler.send_web_response(webserver.webstatus.SERV_FAILURE, "User already exists.")
             return
 
         httphandler.send_web_response(webserver.webstatus.SUCCESS, "User created")
+
+    @staticmethod
+    def change_pass_endpoint(httphandler, form_data, post_data):
+
+        if("authkey" not in post_data):
+            blog.debug("Missing request data for user creation: Authentication key (authkey)")
+            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for user creation: Authentication key (authkey)")
+            return
+
+        if("pass" not in post_data):
+            blog.debug("Missing request data for user creation: Password (pass)")
+            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for user creation: Password (pass)")
+            return
+
+        authkey = post_data["authkey"]
+        newpass = post_data["pass"]
+
+        usr = branch_web_providers.usermgr.get_key_owner(authkey)
+
+        if (usr is None):
+            blog.debug("Tried to change password of not authorized key {}".format(authkey))
+            httphandler.send_web_response(webserver.webstatus.SERV_FAILURE, "Authkey is not valid for any user")
+            return
+
+        blog.debug("Changing password of user {}".format(usr.name))
+
+        # Set the password and force an update on the userfile
+        usr.set_password(newpass)
+        branch_web_providers.usermgr.write_file()
+
+        httphandler.send_web_response(webserver.webstatus.SUCCESS, "Password changed")
 
     #
     # / endpoint, returns html page

@@ -1,7 +1,6 @@
 
 from branchweb import webserver
 import endpoints
-from branchweb import webauth
 import blog
 import asyncio
 from flightdata import FlightDataThread
@@ -34,10 +33,6 @@ class OpenSKYAPI:
 
         if (args.wildcard_cors):
             blog.warn("WARNING: You are sending wildcard CORS headers, this should not be used in production!")
-
-        # Load the user file for the first time
-        blog.info("Loading user file..")
-        webauth.web_auth.setup_user_manager()
 
         # Set up the endpoints
         webserver.web_server.register_get_endpoints(
