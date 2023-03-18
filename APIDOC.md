@@ -40,3 +40,13 @@ This endpoint creates a new user with the supplied username (`user`) and passwor
 On success, the `response_code` field is `200` and the new user can now log in.
 
 On failure, the `payload` field contains the error message.
+
+## `changepass` (`authkey`, `pass`)
+Changes the password for the user owning the supplied authkey
+
+**Note**
+> The user does not get logged out automatically!
+
+On success, the `response_code` field is `200` and the new user can now log in.
+
+On failure, the `payload` field contains the error message.
