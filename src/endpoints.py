@@ -3,6 +3,7 @@ import blog
 
 from branchweb import webserver
 from branchweb import usermanager
+from plane import Plane
 
 class branch_web_providers():
 
@@ -22,9 +23,38 @@ class branch_web_providers():
     @staticmethod
     def get_get_providers():
         get_providers = {
-            "": branch_web_providers.root_endpoint
+            "planedata": branch_web_providers.plane_data_endpoint,
+            "": branch_web_providers.root_endpoint,
         }
         return get_providers
+
+    #
+    # endpoint used to query the history of a plane by its tail
+    #
+    # ENDPOINT /planedata (GET)
+    @staticmethod
+    def plane_data_endpoint(httphandler, form_data):
+
+        if (not form_data or not form_data["planedata"]):
+            blog.info("Missing request data for authentication: plane tail")
+            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "Missing request data for authentication: plane tail")
+            return
+        
+        plane_tail = form_data["planedata"]
+
+        plane = Plane.load_from_file(0, plane_tail)
+
+        if (plane is None):
+            blog.info("No plane with tail {}".format(plane_tail))
+            httphandler.send_web_response(webserver.webstatus.MISSING_DATA, "No plane with tail {}".format(plane_tail))
+            return
+
+        resp = []
+
+        for entry in plane.entries:
+            resp.append(entry.get_info_dict())
+
+        httphandler.send_web_response(webserver.webstatus.SUCCESS, resp)
 
     #
     # endpoint used to authenticate a user

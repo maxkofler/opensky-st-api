@@ -2,6 +2,16 @@
 # OPENSKY-ST-API Doc
 This API documentation lists all the endpoints and their workings.
 
+# GET
+- `planedata`
+
+## `planedata` (`tail`) -> plane history
+THis endpoint provides the plane history with the supplied tail
+
+On success, the `payload` field contains the array of plane entries.
+
+On failure, the `payload` field contains the error message.
+
 # POST
 
 - `auth`
