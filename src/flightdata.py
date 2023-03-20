@@ -25,9 +25,10 @@ class FlightDataThread(threading.Thread):
     async def handler(self, websocket: websockets.WebSocketClientProtocol) -> None:
         async for message in websocket:
             jsn = json.loads(message)
-            entry = Entry(jsn)
+            entry = Entry.from_json(jsn)
             plane = self.get_plane(entry.addr)
             if (plane == None):
+                blog.info("New plane: addr: {}, tail: {}".format(entry.addr, entry.tail))
                 self.planes.append(Plane(entry.addr, entry.tail))
             else:
                 plane.add_entry(entry)
